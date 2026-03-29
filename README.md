@@ -1,4 +1,4 @@
-# 🏥 EHIAS — Electronic Hospital Information & Appointment System
+# EHIAS — Electronic Hospital Information & Appointment System
 
 > A relational MySQL database designed to manage end-to-end hospital operations: patient records, doctor scheduling, prescriptions, billing, and diagnostic lab reports — secured with role-based access control.
 
