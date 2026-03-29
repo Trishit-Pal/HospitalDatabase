@@ -4,7 +4,7 @@
 
 ---
 
-## 📌 Table of Contents
+## Table of Contents
 
 - [Overview](#overview)
 - [Database Architecture](#database-architecture)
@@ -188,11 +188,6 @@ departments ──< doctors >──< appointments >──< patients
 - `Senior` → Department-wide view: all patients, appointments, prescriptions, lab reports in their department
 - `Non-Senior` → Personal view: only appointments assigned to the logged-in doctor
 
-**Usage**:
-```sql
-CALL view_doctor_data('doctor2', 'lBYqWawB');
-CALL view_doctor_data('doctor4', 'ic0pFSn0');
-```
 
 ---
 
@@ -203,9 +198,6 @@ CALL view_doctor_data('doctor4', 'ic0pFSn0');
 **Logic**: Joins `bills → appointments → doctors → departments`, groups by department name, and sums paid + unpaid bill amounts for the specified year-month.
 
 
-**Usage**:
-```sql
-CALL sp_monthlyrevenue(2025, 5);
 ```
 
 ---
@@ -318,17 +310,3 @@ CALL view_doctor_data('doctor1', 'W3jzIANG');
 -- 6. Test revenue report
 CALL sp_monthlyrevenue(2025, 3);
 ```
-
----
-
-## Known Bugs & Improvement Areas
-
-| Issue | Location | Recommendation |
-|---|---|---|
-| Incorrect join in revenue procedure | `sp_monthlyrevenue` | Change `d1.departmentid = d.doctorid` → `d1.departmentid = d.departmentid` |
-| Plaintext passwords | `doctor_credentials` | Migrate to bcrypt hashing |
-| SQLSTATE `49000` is non-standard | `check_new_appointment` trigger | Use `45000` (standard user-defined exception state) for both signals |
-| `delimiter` missing semicolon at end | `sp_monthlyrevenue` | Change `delimiter` → `delimiter ;` |
-| No index on appointment time | `appointments` | Add `INDEX idx_apt_time (appointmenttime)` for trigger performance |
-
----
