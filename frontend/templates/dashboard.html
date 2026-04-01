@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}EHIAS - Dashboard{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">Dashboard</h3>
+
+<div class="card mb-4">
+  <div class="card-header"><strong>Department KPIs</strong></div>
+  <div class="card-body p-0">
+    {% if departments %}
+    <div class="table-responsive">
+      <table class="table table-sm table-striped mb-0" id="deptTable">
+        <thead class="table-light">
+          <tr>
+            {% for col in departments[0].keys() %}
+            <th>{{ col }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in departments %}
+          <tr>
+            {% for val in row.values() %}
+            <td>{{ val|fmt }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="p-3 mb-0 text-muted">No department data available.</p>
+    {% endif %}
+  </div>
+</div>
+
+<div class="card">
+  <div class="card-header"><strong>Today's Scheduled Appointments</strong></div>
+  <div class="card-body p-0">
+    {% if todays %}
+    <div class="table-responsive">
+      <table class="table table-sm table-striped mb-0" id="todayTable">
+        <thead class="table-light">
+          <tr>
+            {% for col in todays[0].keys() %}
+            <th>{{ col }}</th>
+            {% endfor %}
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in todays %}
+          <tr>
+            {% for val in row.values() %}
+            <td>{{ val|fmt }}</td>
+            {% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <p class="p-3 mb-0 text-muted">No appointments scheduled for today.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(function(){
+  $('#deptTable').DataTable({paging:false, info:false});
+  $('#todayTable').DataTable({paging:false, info:false});
+});
+</script>
+{% endblock %}

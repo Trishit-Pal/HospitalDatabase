@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+{% block title %}EHIAS - Analytics{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">Analytical Reports</h3>
+
+<div class="row g-3">
+  {% for item in analytics %}
+  <div class="col-md-4">
+    <div class="card h-100">
+      <div class="card-body d-flex flex-column">
+        <h6 class="card-title">{{ item.title }}</h6>
+        <p class="card-text text-muted small flex-grow-1">{{ item.description }}</p>
+        <a href="{{ url_for('analytics_query', query_id=item.id) }}" class="btn btn-outline-primary btn-sm mt-2">View Report</a>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

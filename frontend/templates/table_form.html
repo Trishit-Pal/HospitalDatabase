@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+{% block title %}EHIAS - {{ 'Edit' if record else 'Add' }} {{ config.display_name }}{% endblock %}
+
+{% block content %}
+<h3 class="mb-4">{{ 'Edit' if record else 'Add' }} {{ config.display_name }}</h3>
+
+<div class="card" style="max-width:600px">
+  <div class="card-body">
+    <form method="POST">
+      {% for field in config.fields %}
+      <div class="mb-3">
+        <label class="form-label">{{ field.label }}</label>
+
+        {% if field.type == 'select' %}
+        <select name="{{ field.name }}" class="form-select" {% if field.get('required') %}required{% endif %}>
+          {% for opt in field.options %}
+            {% if opt is mapping %}
+            <option value="{{ opt.value }}"
+              {% if record and record[field.name]|string == opt.value|string %}selected{% endif %}>{{ opt.label }}</option>
+            {% else %}
+            <option value="{{ opt }}"
+              {% if record and record[field.name]|string == opt|string %}selected{% endif %}>{{ opt }}</option>
+            {% endif %}
+          {% endfor %}
+        </select>
+
+        {% elif field.type == 'fk' %}
+        <select name="{{ field.name }}" class="form-select">
+          {% for opt in fk_options.get(field.name, []) %}
+          <option value="{{ opt.id }}"
+            {% if record and record[field.name] == opt.id %}selected{% endif %}>{{ opt.display }}</option>
+          {% endfor %}
+        </select>
+
+        {% elif field.type == 'textarea' %}
+        <textarea name="{{ field.name }}" class="form-control" rows="4">{{ record[field.name] if record and record[field.name] else '' }}</textarea>
+
+        {% elif field.type == 'datetime-local' %}
+        <input type="datetime-local" name="{{ field.name }}" class="form-control"
+               value="{{ record[field.name]|datetime_local if record else '' }}">
+
+        {% elif field.type == 'date' %}
+        <input type="date" name="{{ field.name }}" class="form-control"
+               value="{{ record[field.name]|date_input if record else '' }}">
+
+        {% else %}
+        <input type="{{ field.type }}" name="{{ field.name }}" class="form-control"
+               value="{{ record[field.name] if record and record[field.name] is not none else '' }}"
+               {% if field.get('maxlength') %}maxlength="{{ field.maxlength }}"{% endif %}
+               {% if field.get('step') %}step="{{ field.step }}"{% endif %}
+               {% if field.get('required') %}required{% endif %}>
+        {% endif %}
+      </div>
+      {% endfor %}
+
+      <button type="submit" class="btn btn-primary">{{ 'Update' if record else 'Save' }}</button>
+      <a href="{{ url_for('table_list', table_name=table_name) }}" class="btn btn-secondary ms-2">Cancel</a>
+    </form>
+  </div>
+</div>
+{% endblock %}
