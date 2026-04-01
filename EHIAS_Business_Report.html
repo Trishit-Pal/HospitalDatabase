@@ -58,7 +58,6 @@
   .kpi-label{font-size:.67rem;text-transform:uppercase;letter-spacing:.09em;color:var(--faint);font-weight:600}
   .kpi-val{font-family:'Lora',serif;font-size:1.8rem;font-weight:700;line-height:1.2;margin:.25rem 0 .15rem}
   .kpi-sub{font-size:.73rem;color:var(--dim)}
-  .kpi-bg{position:absolute;top:.85rem;right:1rem;font-size:1.75rem;opacity:.07}
 
   .bars{display:flex;flex-direction:column;gap:.7rem}
   .bar-r{display:flex;align-items:center;gap:10px}
@@ -131,13 +130,15 @@
 
 <header>
   <div class="logo">
-    <div class="logo-mark">🏥</div>
+    <div class="logo-mark">+</div>
     <div><div class="logo-name">EHIAS</div><div class="logo-desc">Hospital Information System</div></div>
   </div>
   <nav class="nav-pills">
     <a class="nav-pill" href="#metrics">Metrics</a>
     <a class="nav-pill" href="#schema">Schema</a>
     <a class="nav-pill" href="#code">Code</a>
+    <a class="nav-pill" href="#views">Views</a>
+    <a class="nav-pill" href="#analytics">Analytics</a>
     <a class="nav-pill" href="#problems">Problems</a>
   </nav>
   <div class="hbadge">MySQL · InnoDB · FY 2024–25</div>
@@ -148,27 +149,27 @@
   <h1>A <em>relational database</em><br/>built for real hospital operations</h1>
   <p class="hero-intro">EHIAS manages everything a hospital runs on — booking appointments, tracking patients, prescribing medication, running lab work, and collecting payments. This report walks through how the database is structured, what the code does under the hood, and what real business problems it was designed to solve.</p>
   <div class="chips">
-    <span class="chip">7 Normalized Tables</span><span class="chip">2 Stored Procedures</span>
-    <span class="chip">1 Trigger</span><span class="chip">200 Doctors · 2,000 Patients</span>
+    <span class="chip">7 Normalized Tables</span><span class="chip">9 Stored Procedures</span>
+    <span class="chip">6 Triggers</span><span class="chip">5 Views</span>
+    <span class="chip">11 Analytical Queries</span><span class="chip">200 Doctors · 2,000 Patients</span>
     <span class="chip">₹88.97L Total Billed</span>
   </div>
 </div>
 
 <main>
 
-<!-- ════ METRICS ════ -->
 <div class="sec" id="metrics">
   <h2>At a Glance</h2><div class="sec-line"></div><div class="sec-lbl">Key Metrics</div>
 </div>
 <p style="font-size:.87rem;color:var(--dim);margin-bottom:1.3rem;max-width:600px">Here's the headline picture — 4,000 appointments, nearly ₹89 lakh billed, and over ₹27 lakh still outstanding. That collections gap is one of the direct problems this database was built to make trackable.</p>
 
 <div class="g6">
-  <div class="kpi" style="--kc:var(--blue)"><div class="kpi-bg">👥</div><div class="kpi-label">Patients</div><div class="kpi-val">2,000</div><div class="kpi-sub">Unique registered</div></div>
-  <div class="kpi" style="--kc:var(--teal)"><div class="kpi-bg">📅</div><div class="kpi-label">Appointments</div><div class="kpi-val">4,000</div><div class="kpi-sub">69.5% completed</div></div>
-  <div class="kpi" style="--kc:var(--purple)"><div class="kpi-bg">👨‍⚕️</div><div class="kpi-label">Doctors</div><div class="kpi-val">200</div><div class="kpi-sub">10 departments</div></div>
-  <div class="kpi" style="--kc:var(--amber)"><div class="kpi-bg">💰</div><div class="kpi-label">Total Billed</div><div class="kpi-val">₹88.97L</div><div class="kpi-sub">Avg ₹2,541 per bill</div></div>
-  <div class="kpi" style="--kc:var(--teal)"><div class="kpi-bg">✅</div><div class="kpi-label">Collected</div><div class="kpi-val">₹61.26L</div><div class="kpi-sub">2,416 bills paid</div></div>
-  <div class="kpi" style="--kc:var(--red)"><div class="kpi-bg">⚠️</div><div class="kpi-label">Outstanding</div><div class="kpi-val">₹27.70L</div><div class="kpi-sub">1,084 unpaid (30.9%)</div></div>
+  <div class="kpi" style="--kc:var(--blue)"><div class="kpi-label">Patients</div><div class="kpi-val">2,000</div><div class="kpi-sub">Unique registered</div></div>
+  <div class="kpi" style="--kc:var(--teal)"><div class="kpi-label">Appointments</div><div class="kpi-val">4,000</div><div class="kpi-sub">69.5% completed</div></div>
+  <div class="kpi" style="--kc:var(--purple)"><div class="kpi-label">Doctors</div><div class="kpi-val">200</div><div class="kpi-sub">10 departments</div></div>
+  <div class="kpi" style="--kc:var(--amber)"><div class="kpi-label">Total Billed</div><div class="kpi-val">₹88.97L</div><div class="kpi-sub">Avg ₹2,541 per bill</div></div>
+  <div class="kpi" style="--kc:var(--teal)"><div class="kpi-label">Collected</div><div class="kpi-val">₹61.26L</div><div class="kpi-sub">2,416 bills paid</div></div>
+  <div class="kpi" style="--kc:var(--red)"><div class="kpi-label">Outstanding</div><div class="kpi-val">₹27.70L</div><div class="kpi-sub">1,084 unpaid (30.9%)</div></div>
 </div>
 
 <div class="divider"></div>
@@ -242,7 +243,6 @@
 
 <div class="divider"></div>
 
-<!-- ════ SCHEMA ════ -->
 <div class="sec" id="schema">
   <h2>Database Schema</h2><div class="sec-line"></div><div class="sec-lbl">RDBMS Architecture</div>
 </div>
@@ -254,67 +254,67 @@
       <marker id="arr" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#4e576e"/></marker>
       <marker id="arrb" markerWidth="8" markerHeight="6" refX="7" refY="3" orient="auto"><path d="M0,0 L0,6 L8,3 z" fill="#5b9cf6"/></marker>
     </defs>
-    <!-- departments -->
+    
     <rect x="28" y="28" width="165" height="96" rx="10" fill="#111318" stroke="#1f2330" stroke-width="1.5"/>
     <rect x="28" y="28" width="165" height="28" rx="10" fill="#16203a"/>
     <rect x="28" y="46" width="165" height="10" fill="#16203a"/>
     <text x="110" y="47" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" font-weight="600" fill="#5b9cf6">departments</text>
-    <text x="40" y="72" font-family="DM Mono,monospace" font-size="9.5" fill="#f5a944">🔑 departmentid</text>
+    <text x="40" y="72" font-family="DM Mono,monospace" font-size="9.5" fill="#f5a944">PK departmentid</text>
     <text x="40" y="88" font-family="DM Mono,monospace" font-size="9.5" fill="#8892aa">   name</text>
-    <!-- doctors -->
+    
     <rect x="28" y="188" width="165" height="145" rx="10" fill="#111318" stroke="#1f2330" stroke-width="1.5"/>
     <rect x="28" y="188" width="165" height="28" rx="10" fill="#16203a"/>
     <rect x="28" y="206" width="165" height="10" fill="#16203a"/>
     <text x="110" y="207" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" font-weight="600" fill="#5b9cf6">doctors</text>
-    <text x="40" y="233" font-family="DM Mono,monospace" font-size="9.5" fill="#f5a944">🔑 doctorid</text>
+    <text x="40" y="233" font-family="DM Mono,monospace" font-size="9.5" fill="#f5a944">PK doctorid</text>
     <text x="40" y="249" font-family="DM Mono,monospace" font-size="9.5" fill="#8892aa">   name</text>
     <text x="40" y="265" font-family="DM Mono,monospace" font-size="9.5" fill="#8892aa">   specialization</text>
     <text x="40" y="281" font-family="DM Mono,monospace" font-size="9.5" fill="#8892aa">   role</text>
-    <text x="40" y="297" font-family="DM Mono,monospace" font-size="9.5" fill="#2dd4b4">🔗 departmentid</text>
-    <!-- patients -->
+    <text x="40" y="297" font-family="DM Mono,monospace" font-size="9.5" fill="#2dd4b4">FK departmentid</text>
+    
     <rect x="28" y="398" width="165" height="72" rx="10" fill="#111318" stroke="#1f2330" stroke-width="1.5"/>
     <rect x="28" y="398" width="165" height="28" rx="10" fill="#16203a"/>
     <rect x="28" y="416" width="165" height="10" fill="#16203a"/>
     <text x="110" y="417" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" font-weight="600" fill="#5b9cf6">patients</text>
-    <text x="40" y="443" font-family="DM Mono,monospace" font-size="9.5" fill="#f5a944">🔑 patientid</text>
+    <text x="40" y="443" font-family="DM Mono,monospace" font-size="9.5" fill="#f5a944">PK patientid</text>
     <text x="40" y="458" font-family="DM Mono,monospace" font-size="9.5" fill="#8892aa">   name  dob  gender  phone</text>
-    <!-- appointments HUB -->
+    
     <rect x="340" y="170" width="210" height="168" rx="10" fill="#0c1520" stroke="#5b9cf6" stroke-width="2"/>
     <rect x="340" y="170" width="210" height="28" rx="10" fill="#112040"/>
     <rect x="340" y="188" width="210" height="10" fill="#112040"/>
     <text x="445" y="189" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" font-weight="700" fill="#5b9cf6">appointments</text>
-    <text x="352" y="215" font-family="DM Mono,monospace" font-size="9.5" fill="#f5a944">🔑 appointmentid</text>
-    <text x="352" y="231" font-family="DM Mono,monospace" font-size="9.5" fill="#2dd4b4">🔗 patientid</text>
-    <text x="352" y="247" font-family="DM Mono,monospace" font-size="9.5" fill="#2dd4b4">🔗 doctorid</text>
+    <text x="352" y="215" font-family="DM Mono,monospace" font-size="9.5" fill="#f5a944">PK appointmentid</text>
+    <text x="352" y="231" font-family="DM Mono,monospace" font-size="9.5" fill="#2dd4b4">FK patientid</text>
+    <text x="352" y="247" font-family="DM Mono,monospace" font-size="9.5" fill="#2dd4b4">FK doctorid</text>
     <text x="352" y="263" font-family="DM Mono,monospace" font-size="9.5" fill="#8892aa">   appointmenttime</text>
     <text x="352" y="279" font-family="DM Mono,monospace" font-size="9.5" fill="#8892aa">   status</text>
     <text x="445" y="325" text-anchor="middle" font-family="DM Sans,sans-serif" font-size="9" fill="#5b9cf6" font-style="italic">← central hub →</text>
-    <!-- prescriptions -->
+    
     <rect x="690" y="28" width="200" height="100" rx="10" fill="#111318" stroke="#1f2330" stroke-width="1.5"/>
     <rect x="690" y="28" width="200" height="28" rx="10" fill="#16203a"/>
     <rect x="690" y="46" width="200" height="10" fill="#16203a"/>
     <text x="790" y="47" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" font-weight="600" fill="#5b9cf6">prescriptions</text>
-    <text x="702" y="73" font-family="DM Mono,monospace" font-size="9.5" fill="#f5a944">🔑 prescriptionid</text>
-    <text x="702" y="89" font-family="DM Mono,monospace" font-size="9.5" fill="#2dd4b4">🔗 appointmentid</text>
+    <text x="702" y="73" font-family="DM Mono,monospace" font-size="9.5" fill="#f5a944">PK prescriptionid</text>
+    <text x="702" y="89" font-family="DM Mono,monospace" font-size="9.5" fill="#2dd4b4">FK appointmentid</text>
     <text x="702" y="105" font-family="DM Mono,monospace" font-size="9.5" fill="#8892aa">   medication  dosage</text>
-    <!-- bills -->
+    
     <rect x="690" y="192" width="200" height="112" rx="10" fill="#111318" stroke="#1f2330" stroke-width="1.5"/>
     <rect x="690" y="192" width="200" height="28" rx="10" fill="#16203a"/>
     <rect x="690" y="210" width="200" height="10" fill="#16203a"/>
     <text x="790" y="211" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" font-weight="600" fill="#5b9cf6">bills</text>
-    <text x="702" y="237" font-family="DM Mono,monospace" font-size="9.5" fill="#f5a944">🔑 billid</text>
-    <text x="702" y="253" font-family="DM Mono,monospace" font-size="9.5" fill="#2dd4b4">🔗 appointmentid</text>
+    <text x="702" y="237" font-family="DM Mono,monospace" font-size="9.5" fill="#f5a944">PK billid</text>
+    <text x="702" y="253" font-family="DM Mono,monospace" font-size="9.5" fill="#2dd4b4">FK appointmentid</text>
     <text x="702" y="269" font-family="DM Mono,monospace" font-size="9.5" fill="#8892aa">   amount  paid</text>
     <text x="702" y="285" font-family="DM Mono,monospace" font-size="9.5" fill="#8892aa">   billdate (auto-timestamp)</text>
-    <!-- labreports -->
+    
     <rect x="690" y="370" width="200" height="100" rx="10" fill="#111318" stroke="#1f2330" stroke-width="1.5"/>
     <rect x="690" y="370" width="200" height="28" rx="10" fill="#16203a"/>
     <rect x="690" y="388" width="200" height="10" fill="#16203a"/>
     <text x="790" y="389" text-anchor="middle" font-family="DM Mono,monospace" font-size="11" font-weight="600" fill="#5b9cf6">labreports</text>
-    <text x="702" y="415" font-family="DM Mono,monospace" font-size="9.5" fill="#f5a944">🔑 reportid</text>
-    <text x="702" y="431" font-family="DM Mono,monospace" font-size="9.5" fill="#2dd4b4">🔗 appointmentid</text>
+    <text x="702" y="415" font-family="DM Mono,monospace" font-size="9.5" fill="#f5a944">PK reportid</text>
+    <text x="702" y="431" font-family="DM Mono,monospace" font-size="9.5" fill="#2dd4b4">FK appointmentid</text>
     <text x="702" y="447" font-family="DM Mono,monospace" font-size="9.5" fill="#8892aa">   reportdata (JSON)  createdate</text>
-    <!-- LINES: grey = master, blue = hub FK -->
+    
     <line x1="110" y1="124" x2="110" y2="188" stroke="#4e576e" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
     <text x="116" y="158" font-family="DM Sans,sans-serif" font-size="8.5" fill="#4e576e">1 : N</text>
     <line x1="193" y1="268" x2="340" y2="248" stroke="#4e576e" stroke-width="1.5" stroke-dasharray="5,3" marker-end="url(#arr)"/>
@@ -327,7 +327,7 @@
     <text x="604" y="244" font-family="DM Sans,sans-serif" font-size="8.5" fill="#5b9cf6">1 : 0..1</text>
     <line x1="550" y1="290" x2="690" y2="400" stroke="#5b9cf6" stroke-width="1.5" stroke-dasharray="4,2" marker-end="url(#arrb)"/>
     <text x="604" y="356" font-family="DM Sans,sans-serif" font-size="8.5" fill="#5b9cf6">1 : 0..1</text>
-    <!-- LEGEND -->
+    
     <rect x="290" y="438" width="220" height="44" rx="6" fill="#181c24" stroke="#1f2330"/>
     <line x1="300" y1="452" x2="324" y2="452" stroke="#4e576e" stroke-width="1.5" stroke-dasharray="5,3"/>
     <text x="330" y="455" font-family="DM Sans,sans-serif" font-size="8.5" fill="#4e576e">Master hierarchy (1:N)</text>
@@ -335,7 +335,7 @@
     <text x="330" y="473" font-family="DM Sans,sans-serif" font-size="8.5" fill="#5b9cf6">Appointment FK (1:0..1)</text>
   </svg>
   <div class="diagram-note">
-    <strong>Reading the diagram:</strong> Grey dashed arrows show the master hierarchy — departments contain doctors, and both doctors and patients flow into appointments. Blue dashed arrows show how prescriptions, bills, and lab reports each hang off a single appointment via foreign key. Gold 🔑 = primary key; teal 🔗 = foreign key.
+    <strong>Reading the diagram:</strong> Grey dashed arrows show the master hierarchy — departments contain doctors, and both doctors and patients flow into appointments. Blue dashed arrows show how prescriptions, bills, and lab reports each hang off a single appointment via foreign key. Gold PK = primary key; teal FK = foreign key.
   </div>
 </div>
 
@@ -357,148 +357,306 @@
 
 <div class="divider"></div>
 
-<!-- ════ CODE ════ -->
 <div class="sec" id="code">
   <h2>How the Code Works</h2><div class="sec-line"></div><div class="sec-lbl">Procedures &amp; Triggers</div>
 </div>
-<p style="font-size:.87rem;color:var(--dim);margin-bottom:1.6rem;max-width:640px;line-height:1.8">Three pieces of logic live inside the database itself — two stored procedures and one trigger. Each one enforces a rule or produces a report without relying on application code. Three bugs were found during review and are fixed here, highlighted in amber.</p>
+<p style="font-size:.87rem;color:var(--dim);margin-bottom:1.6rem;max-width:640px;line-height:1.8">The database contains 9 stored procedures and 6 triggers that enforce business rules and generate reports without relying on application code. The original code had 3 bugs which are fixed here, highlighted in amber.</p>
 
-<!-- Proc 1 -->
+<div style="font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);font-weight:600;margin-bottom:1rem">Triggers — 6 Total</div>
+
 <div class="proc-card" style="margin-bottom:1.2rem">
-  <div class="proc-title">PROCEDURE — view_doctor_data(in_username, in_password)</div>
-  <div class="proc-desc">When a doctor logs in, this procedure checks their credentials, figures out their role, and returns exactly the patient records they're allowed to see — nothing more. Clinical privacy enforced at the database layer itself.</div>
-  <div class="proc-tags">
-    <span class="pill p-blue">Authentication</span>
-    <span class="pill p-teal">Role-Based Access</span>
-    <span class="pill p-purple">Patient Privacy</span>
-  </div>
-  <div class="steps">
-    <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Authenticate:</strong> Runs a SELECT against <code class="i">doctor_credentials</code> matching both username and password. Stores the matched doctor_id into a local variable.</div></div>
-    <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Fetch role + department:</strong> Uses that doctor_id to pull the doctor's <code class="i">role</code> and <code class="i">departmentid</code> from the doctors table into more local variables.</div></div>
-    <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Branch on role:</strong> If the role is <code class="i">'Senior'</code>, the procedure returns all patients in their whole department — across every doctor in that unit. Any other role (Resident, Consultant, Junior) gets only their own patients.</div></div>
-  </div>
-  <div class="code-block">
-<span class="cmt">-- How to call it</span><br/>
-<span class="fn">CALL</span> view_doctor_data(<span class="str">'doctor2'</span>, <span class="str">'lBYqWawB'</span>);<br/>
-<span class="cmt">-- doctor2 is a non-senior → sees only their own patients</span><br/><br/>
-<span class="fn">CALL</span> view_doctor_data(<span class="str">'doctor4'</span>, <span class="str">'ic0pFSn0'</span>);<br/>
-<span class="cmt">-- doctor4 is senior → sees all patients in their department</span>
-  </div>
-</div>
-
-<!-- Proc 2 -->
-<div class="proc-card" style="margin-bottom:1.2rem">
-  <div class="proc-title">PROCEDURE — sp_monthlyrevenue(p_year, p_month) &nbsp;·&nbsp; <span style="color:var(--teal);font-size:.82rem">✓ Fix 1 + Fix 3 Applied</span></div>
-  <div class="proc-desc">Gives the finance team a department-by-department revenue breakdown for any given month. It joins bills all the way through appointments → doctors → departments and sums up the totals. Two bugs were corrected here.</div>
-  <div class="proc-tags">
-    <span class="pill p-amber">Finance Reporting</span>
-    <span class="pill p-blue">Department Analytics</span>
-    <span class="pill p-teal">2 Bugs Fixed</span>
-  </div>
-  <div class="steps">
-    <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Join chain:</strong> bills → appointments → doctors → departments. This traces each payment all the way back to the department it came from, through the appointment hub.</div></div>
-    <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Filter by period:</strong> Uses <code class="i">MONTH(b.billdate) = p_month AND YEAR(b.billdate) = p_year</code> to scope results to the requested calendar month.</div></div>
-    <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Group and sum:</strong> Aggregates <code class="i">SUM(b.amount)</code> grouped by department name — each department gets its own total revenue line for that month.</div></div>
-  </div>
-  <div class="code-block">
-<span class="kw">DELIMITER</span> //<br/>
-<span class="kw">CREATE PROCEDURE</span> <span class="fn">sp_monthlyrevenue</span> (<span class="kw">IN</span> P_year <span class="kw">INT</span>, p_month <span class="kw">INT</span>)<br/>
-<span class="kw">BEGIN</span><br/>
-&nbsp;&nbsp;<span class="kw">SELECT</span> d1.name <span class="kw">AS</span> department,<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="fn">SUM</span>(b.amount) <span class="kw">AS</span> total_revenue<br/>
-&nbsp;&nbsp;<span class="kw">FROM</span> bills <span class="kw">AS</span> b<br/>
-&nbsp;&nbsp;<span class="kw">INNER JOIN</span> appointments <span class="kw">AS</span> a &nbsp;<span class="kw">ON</span> a.appointmentid = b.appointmentid<br/>
-&nbsp;&nbsp;<span class="kw">INNER JOIN</span> doctors <span class="kw">AS</span> d &nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">ON</span> a.doctorid = d.doctorid<br/>
-&nbsp;&nbsp;<span class="kw">INNER JOIN</span> departments <span class="kw">AS</span> d1 <span class="kw">ON</span> d1.departmentid = <span class="fix">d.departmentid</span><br/>
-&nbsp;&nbsp;<span class="cmt">-- ✓ Fix 1: was d1.departmentid = d.doctorid — wrong column, departments joined to doctor IDs instead of dept IDs</span><br/>
-&nbsp;&nbsp;<span class="kw">WHERE</span> <span class="fn">MONTH</span>(b.billdate) = p_month <span class="kw">AND</span> <span class="fn">YEAR</span>(b.billdate) = P_year<br/>
-&nbsp;&nbsp;<span class="kw">GROUP BY</span> d1.name;<br/>
-<span class="kw">END</span>//<br/>
-<span class="kw">DELIMITER</span> <span class="fix">;</span><br/>
-<span class="cmt">-- ✓ Fix 3: was just 'delimiter' with no semicolon — the parser never closed the block properly</span><br/><br/>
-<span class="fn">CALL</span> sp_monthlyrevenue(<span class="num">2025</span>, <span class="num">5</span>);<br/>
-<span class="cmt">-- Returns May 2025 revenue, grouped by each of the 10 departments</span>
-  </div>
-</div>
-
-<!-- Trigger -->
-<div class="proc-card">
   <div class="proc-title">TRIGGER — check_new_appointment (BEFORE INSERT) &nbsp;·&nbsp; <span style="color:var(--teal);font-size:.82rem">✓ Fix 2 Applied</span></div>
-  <div class="proc-desc">This runs silently every time someone tries to insert a new appointment. It checks two rules and blocks the insert if either one fails. It's a gatekeeper that never sleeps — no application code can get around it.</div>
+  <div class="proc-desc">Runs on every new appointment insert. Blocks the row if the time is in the past or the doctor is already booked at that slot.</div>
   <div class="proc-tags">
     <span class="pill p-blue">Conflict Prevention</span>
     <span class="pill p-teal">Data Integrity</span>
-    <span class="pill p-purple">1 Bug Fixed</span>
   </div>
   <div class="steps">
-    <div class="step"><div class="step-num">1</div><div class="step-body"><strong>No past appointments:</strong> If the incoming <code class="i">appointmenttime</code> is before right now, the insert is rejected immediately. You can't backdate a booking.</div></div>
-    <div class="step"><div class="step-num">2</div><div class="step-body"><strong>No double-booking:</strong> Checks whether the same doctor already has a <em>Scheduled</em> appointment at that exact date-time. If they do, the new row is blocked with a clear error message.</div></div>
+    <div class="step"><div class="step-num">1</div><div class="step-body"><strong>No past appointments:</strong> Rejects if <code class="i">appointmenttime &lt; NOW()</code>.</div></div>
+    <div class="step"><div class="step-num">2</div><div class="step-body"><strong>No double-booking:</strong> Checks if the same doctor already has a Scheduled appointment at that exact time.</div></div>
   </div>
-  <div class="code-block">
-<span class="kw">DELIMITER</span> $$<br/>
-<span class="kw">CREATE TRIGGER</span> <span class="fn">check_new_appointment</span><br/>
-<span class="kw">BEFORE INSERT ON</span> appointments <span class="kw">FOR EACH ROW</span><br/>
-<span class="kw">BEGIN</span><br/>
-&nbsp;&nbsp;<span class="cmt">-- Rule 1: block any appointment set in the past</span><br/>
-&nbsp;&nbsp;<span class="kw">IF</span> NEW.appointmenttime &lt; <span class="fn">NOW</span>() <span class="kw">THEN</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">SIGNAL SQLSTATE</span> <span class="fix">'45000'</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="cmt">-- ✓ Fix 2: was '49000' — non-standard, no MySQL handler catches it. '45000' is the correct user-defined exception state</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">SET MESSAGE_TEXT</span> = <span class="str">'Error: Appointment cannot be in the past'</span>;<br/>
-&nbsp;&nbsp;<span class="kw">END IF</span>;<br/><br/>
-&nbsp;&nbsp;<span class="cmt">-- Rule 2: block if that doctor is already booked at this exact time</span><br/>
-&nbsp;&nbsp;<span class="kw">IF EXISTS</span> (<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">SELECT</span> * <span class="kw">FROM</span> appointments<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">WHERE</span> doctorid = NEW.doctorid<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">AND</span> appointmenttime = NEW.appointmenttime<br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">AND</span> status = <span class="str">'Scheduled'</span><br/>
-&nbsp;&nbsp;) <span class="kw">THEN</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">SIGNAL SQLSTATE</span> <span class="str">'45000'</span><br/>
-&nbsp;&nbsp;&nbsp;&nbsp;<span class="kw">SET MESSAGE_TEXT</span> = <span class="str">'Error: Doctor already has an appointment at this time.'</span>;<br/>
-&nbsp;&nbsp;<span class="kw">END IF</span>;<br/>
-<span class="kw">END</span> $$<br/>
-<span class="kw">DELIMITER</span> ;
+</div>
+
+<div class="proc-card" style="margin-bottom:1.2rem">
+  <div class="proc-title">TRIGGER — check_appointment_update (BEFORE UPDATE)</div>
+  <div class="proc-desc">Mirrors the insert trigger but fires on updates. Prevents rescheduling an appointment to a past time and blocks double-booking when a doctor or time is changed.</div>
+  <div class="proc-tags">
+    <span class="pill p-blue">Reschedule Guard</span>
+    <span class="pill p-teal">Double-Book Check</span>
+  </div>
+</div>
+
+<div class="proc-card" style="margin-bottom:1.2rem">
+  <div class="proc-title">TRIGGER — prevent_doctor_delete (BEFORE DELETE)</div>
+  <div class="proc-desc">Blocks deletion of any doctor who still has future scheduled appointments. Protects referential integrity beyond what foreign keys alone enforce.</div>
+  <div class="proc-tags">
+    <span class="pill p-purple">Referential Safety</span>
+    <span class="pill p-blue">Staff Protection</span>
+  </div>
+</div>
+
+<div class="proc-card" style="margin-bottom:1.2rem">
+  <div class="proc-title">TRIGGER — validate_patient_phone_insert / _update (BEFORE INSERT + UPDATE)</div>
+  <div class="proc-desc">Validates that the patient phone number is exactly 10 numeric digits. Fires on both insert and update operations. Uses REGEXP to reject any non-digit characters.</div>
+  <div class="proc-tags">
+    <span class="pill p-amber">Input Validation</span>
+    <span class="pill p-teal">Data Quality</span>
+  </div>
+</div>
+
+<div class="proc-card" style="margin-bottom:1.2rem">
+  <div class="proc-title">TRIGGER — auto_bill_on_completion (AFTER UPDATE)</div>
+  <div class="proc-desc">When an appointment status changes to 'Completed', this trigger automatically creates a bill entry if one doesn't already exist. Ensures no completed visit goes unbilled.</div>
+  <div class="proc-tags">
+    <span class="pill p-amber">Auto-Billing</span>
+    <span class="pill p-teal">Revenue Assurance</span>
   </div>
 </div>
 
 <div class="divider"></div>
 
-<!-- ════ PROBLEMS ════ -->
+<div style="font-size:.78rem;text-transform:uppercase;letter-spacing:.1em;color:var(--blue);font-weight:600;margin-bottom:1rem">Stored Procedures — 9 Total</div>
+
+<div class="g2">
+  <div class="proc-card">
+    <div class="proc-title">view_doctor_data(username, password)</div>
+    <div class="proc-desc">Authenticates a doctor, checks their role, and returns filtered patient data. Seniors see entire department; others see only their own patients.</div>
+    <div class="proc-tags">
+      <span class="pill p-blue">Authentication</span>
+      <span class="pill p-teal">Role-Based Access</span>
+    </div>
+    <div class="code-block">
+<span class="fn">CALL</span> view_doctor_data(<span class="str">'doctor4'</span>, <span class="str">'ic0pFSn0'</span>);
+    </div>
+  </div>
+  <div class="proc-card">
+    <div class="proc-title">sp_monthlyrevenue(p_year, p_month) &nbsp;·&nbsp; <span style="color:var(--teal);font-size:.82rem">✓ Fixed</span></div>
+    <div class="proc-desc">Department-by-department revenue breakdown for any given month. Joins bills through appointments, doctors, and departments.</div>
+    <div class="proc-tags">
+      <span class="pill p-amber">Finance</span>
+      <span class="pill p-blue">Department Analytics</span>
+    </div>
+    <div class="code-block">
+<span class="fn">CALL</span> sp_monthlyrevenue(<span class="num">2025</span>, <span class="num">5</span>);
+    </div>
+  </div>
+</div>
+
+<div class="g2" style="margin-top:1.2rem">
+  <div class="proc-card">
+    <div class="proc-title">sp_search_patient(search_term)</div>
+    <div class="proc-desc">Searches patients by name or phone number using partial matching. Returns patient ID, name, DOB, gender, and phone.</div>
+    <div class="proc-tags">
+      <span class="pill p-blue">Patient Lookup</span>
+    </div>
+    <div class="code-block">
+<span class="fn">CALL</span> sp_search_patient(<span class="str">'Patient 1'</span>);
+    </div>
+  </div>
+  <div class="proc-card">
+    <div class="proc-title">sp_patient_history(p_patientid)</div>
+    <div class="proc-desc">Returns the complete clinical journey of a patient — all appointments, prescriptions, lab results, billing, and payment status in one query.</div>
+    <div class="proc-tags">
+      <span class="pill p-teal">Clinical History</span>
+      <span class="pill p-purple">Full Journey</span>
+    </div>
+    <div class="code-block">
+<span class="fn">CALL</span> sp_patient_history(<span class="num">1</span>);
+    </div>
+  </div>
+</div>
+
+<div class="g2" style="margin-top:1.2rem">
+  <div class="proc-card">
+    <div class="proc-title">sp_doctor_schedule(doctorid, start, end)</div>
+    <div class="proc-desc">Retrieves a doctor's appointment schedule for a given date range. Shows patient name, phone, gender, time, and status.</div>
+    <div class="proc-tags">
+      <span class="pill p-blue">Scheduling</span>
+    </div>
+    <div class="code-block">
+<span class="fn">CALL</span> sp_doctor_schedule(<span class="num">1</span>, <span class="str">'2024-01-01'</span>, <span class="str">'2025-12-31'</span>);
+    </div>
+  </div>
+  <div class="proc-card">
+    <div class="proc-title">sp_cancel_appointment(appointmentid)</div>
+    <div class="proc-desc">Safely cancels an appointment with validation. Rejects if the appointment is already completed, already cancelled, or doesn't exist.</div>
+    <div class="proc-tags">
+      <span class="pill p-amber">Cancellation</span>
+      <span class="pill p-teal">Validation</span>
+    </div>
+    <div class="code-block">
+<span class="fn">CALL</span> sp_cancel_appointment(<span class="num">100</span>);
+    </div>
+  </div>
+</div>
+
+<div class="g2" style="margin-top:1.2rem">
+  <div class="proc-card">
+    <div class="proc-title">sp_outstanding_bills()</div>
+    <div class="proc-desc">Generates a summary of unpaid bills grouped by department. Shows count, total outstanding, average bill, and oldest unpaid date.</div>
+    <div class="proc-tags">
+      <span class="pill p-amber">Finance</span>
+      <span class="pill p-blue">Collections</span>
+    </div>
+    <div class="code-block">
+<span class="fn">CALL</span> sp_outstanding_bills();
+    </div>
+  </div>
+  <div class="proc-card">
+    <div class="proc-title">sp_yearly_revenue(p_year)</div>
+    <div class="proc-desc">Annual revenue by department with collection rate percentage. Breaks down total billed vs collected vs pending amounts.</div>
+    <div class="proc-tags">
+      <span class="pill p-amber">Annual Report</span>
+      <span class="pill p-teal">Collection Rate</span>
+    </div>
+    <div class="code-block">
+<span class="fn">CALL</span> sp_yearly_revenue(<span class="num">2024</span>);
+    </div>
+  </div>
+</div>
+
+<div class="proc-card" style="margin-top:1.2rem">
+  <div class="proc-title">sp_abnormal_lab_reports()</div>
+  <div class="proc-desc">Parses JSON lab report data and flags patients with abnormal values — Low WBC (&lt;4000), High WBC (&gt;11000), Low Hemoglobin (&lt;12.0), or Low RBC (&lt;4.0). Returns patient details, doctor name, and the specific flag reason.</div>
+  <div class="proc-tags">
+    <span class="pill p-purple">Diagnostics</span>
+    <span class="pill p-teal">JSON Parsing</span>
+    <span class="pill p-amber">Clinical Alert</span>
+  </div>
+  <div class="code-block">
+<span class="fn">CALL</span> sp_abnormal_lab_reports();
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec" id="views">
+  <h2>Database Views</h2><div class="sec-line"></div><div class="sec-lbl">Simplified Querying</div>
+</div>
+<p style="font-size:.87rem;color:var(--dim);margin-bottom:1.4rem;max-width:640px;line-height:1.8">Five pre-built views provide one-line access to the most commonly needed data. Instead of writing complex joins every time, staff can simply query these views.</p>
+
+<div class="card" style="margin-bottom:1.2rem">
+  <div class="card-title">All 5 Views — Ready-to-Query Data</div>
+  <table class="tbl">
+    <thead><tr><th>View Name</th><th>What it Returns</th><th>Use Case</th></tr></thead>
+    <tbody>
+      <tr><td class="mono">vw_unpaid_bills</td><td style="color:var(--dim)">All unpaid bills with patient name, phone, doctor, department, amount, and date</td><td><span class="pill p-amber">Billing Team</span></td></tr>
+      <tr><td class="mono">vw_doctor_workload</td><td style="color:var(--dim)">Each doctor's appointment counts split by Completed, Scheduled, and Cancelled</td><td><span class="pill p-blue">HR / Admin</span></td></tr>
+      <tr><td class="mono">vw_patient_profile</td><td style="color:var(--dim)">Patient demographics, calculated age, total visits, last visit date, outstanding balance</td><td><span class="pill p-teal">Reception</span></td></tr>
+      <tr><td class="mono">vw_department_dashboard</td><td style="color:var(--dim)">Department KPIs: doctor count, completion rate, cancellation rate, revenue breakdown</td><td><span class="pill p-purple">Management</span></td></tr>
+      <tr><td class="mono">vw_todays_appointments</td><td style="color:var(--dim)">Today's scheduled appointments with patient, doctor, specialization, and department</td><td><span class="pill p-blue">Front Desk</span></td></tr>
+    </tbody>
+  </table>
+  <div class="code-block" style="margin-top:1rem">
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">vw_unpaid_bills</span>;<br/>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">vw_doctor_workload</span> <span class="kw">ORDER BY</span> total_appointments <span class="kw">DESC LIMIT</span> <span class="num">20</span>;<br/>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">vw_patient_profile</span> <span class="kw">WHERE</span> outstanding_balance > <span class="num">0</span>;<br/>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">vw_department_dashboard</span> <span class="kw">ORDER BY</span> total_revenue <span class="kw">DESC</span>;<br/>
+<span class="kw">SELECT</span> * <span class="kw">FROM</span> <span class="fn">vw_todays_appointments</span>;
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<div class="sec" id="analytics">
+  <h2>Analytical Queries</h2><div class="sec-line"></div><div class="sec-lbl">Business Intelligence</div>
+</div>
+<p style="font-size:.87rem;color:var(--dim);margin-bottom:1.4rem;max-width:640px;line-height:1.8">Eleven standalone analytical queries provide insights into hospital operations — from doctor performance and prescription patterns to patient demographics and revenue trends.</p>
+
+<div class="g2">
+  <div class="card">
+    <div class="card-title">Operational Analytics</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">1</div><div class="step-body"><strong>Top 10 Busiest Doctors</strong> — Ranked by completed appointments with specialization and department.</div></div>
+      <div class="step"><div class="step-num">2</div><div class="step-body"><strong>Most Prescribed Medications</strong> — Shows prescription count, number of prescribing doctors, and patients receiving each drug.</div></div>
+      <div class="step"><div class="step-num">3</div><div class="step-body"><strong>Cancellation Rate by Specialization</strong> — Appointment status breakdown showing which specializations have the highest cancellation percentage.</div></div>
+      <div class="step"><div class="step-num">4</div><div class="step-body"><strong>Prescription Patterns</strong> — Cross-tabulation of medications vs specializations to reveal prescribing trends.</div></div>
+      <div class="step"><div class="step-num">5</div><div class="step-body"><strong>Repeat Patients</strong> — Patients with more than 3 visits, showing how many different doctors they've seen.</div></div>
+      <div class="step"><div class="step-num">6</div><div class="step-body"><strong>Monthly Appointment Trends</strong> — Month-by-month completed vs cancelled counts over the full data period.</div></div>
+    </div>
+  </div>
+  <div class="card">
+    <div class="card-title">Financial &amp; Demographic Analytics</div>
+    <div class="steps">
+      <div class="step"><div class="step-num">7</div><div class="step-body"><strong>Revenue by Specialization</strong> — Total, average, highest, and lowest bill per specialization.</div></div>
+      <div class="step"><div class="step-num">8</div><div class="step-body"><strong>Patient Age Distribution</strong> — Patients grouped into Under 18, 18-30, 31-45, 46-60, Above 60 with gender breakdown.</div></div>
+      <div class="step"><div class="step-num">9</div><div class="step-body"><strong>Highest Outstanding Balances</strong> — Top 15 patients with the most unpaid bills by total amount.</div></div>
+      <div class="step"><div class="step-num">10</div><div class="step-body"><strong>Doctor Role Distribution</strong> — Seniors, Juniors, Consultants, and Residents per department.</div></div>
+      <div class="step"><div class="step-num">11</div><div class="step-body"><strong>Revenue per Doctor by Role</strong> — Average revenue generated per doctor, grouped by role level.</div></div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
 <div class="sec" id="problems">
   <h2>Business Problems Solved</h2><div class="sec-line"></div><div class="sec-lbl">Why this database exists</div>
 </div>
-<p style="font-size:.87rem;color:var(--dim);margin-bottom:1.5rem;max-width:640px;line-height:1.8">Every design decision in this database was made to solve a real operational problem. Here are the four core challenges the schema and its built-in logic address directly.</p>
+<p style="font-size:.87rem;color:var(--dim);margin-bottom:1.5rem;max-width:640px;line-height:1.8">Every design decision in this database was made to solve a real operational problem. Here are the eight core challenges the schema and its built-in logic address directly.</p>
 
 <div class="problems">
   <div class="prob">
     <div class="prob-n">01</div>
     <div>
       <div class="prob-title">Scheduling Conflicts &amp; Double-Booking</div>
-      <div class="prob-body">Without a guard, two patients could be booked with the same doctor at the exact same time. With 823 appointments currently sitting in Scheduled status, a collision in the booking flow would be embarrassing at best, clinically disruptive at worst. The trigger handles this at the data layer — no app code can bypass it.</div>
-      <div class="prob-solve">Solved by the BEFORE INSERT trigger — double-booking check runs on every new appointment row</div>
+      <div class="prob-body">Without a guard, two patients could be booked with the same doctor at the exact same time. Two triggers — one on INSERT, one on UPDATE — ensure no double-booking can happen at the data layer, even when rescheduling.</div>
+      <div class="prob-solve">Solved by check_new_appointment + check_appointment_update triggers</div>
     </div>
   </div>
   <div class="prob">
     <div class="prob-n">02</div>
     <div>
       <div class="prob-title">Patient Data Privacy &amp; Clinical Access Control</div>
-      <div class="prob-body">With 200 doctors across 10 departments, you can't have everyone seeing everyone's patient records. A junior resident has no clinical reason to see another doctor's patients. The <code class="i">view_doctor_data</code> procedure enforces this at runtime — not just at the application level — checking the doctor's role on every single call.</div>
-      <div class="prob-solve">Solved by the role-gated stored procedure — Senior sees department, everyone else sees only their own patients</div>
+      <div class="prob-body">With 200 doctors across 10 departments, you can't have everyone seeing everyone's patient records. The <code class="i">view_doctor_data</code> procedure enforces role-based access at the database layer — Senior sees the department, others see only their own patients.</div>
+      <div class="prob-solve">Solved by the role-gated stored procedure with credential authentication</div>
     </div>
   </div>
   <div class="prob">
     <div class="prob-n">03</div>
     <div>
       <div class="prob-title">₹27.70 Lakh in Outstanding Payments</div>
-      <div class="prob-body">Nearly 31% of all billed revenue — 1,084 bills totalling ₹27.70 lakh — is unpaid. Without a structured way to query this, the billing team is flying blind. The <code class="i">bills.paid</code> boolean flag combined with the auto-timestamped <code class="i">billdate</code> column makes it a one-line query to pull every overdue bill for any date range.</div>
-      <div class="prob-solve">Solved via bills.paid flag + billdate timestamp — overdue reporting requires no joins, just a WHERE clause</div>
+      <div class="prob-body">Nearly 31% of all billed revenue is unpaid. The <code class="i">vw_unpaid_bills</code> view, <code class="i">sp_outstanding_bills</code> procedure, and the highest-balance analytical query make tracking overdue amounts a one-line operation for the billing team.</div>
+      <div class="prob-solve">Solved via vw_unpaid_bills view + sp_outstanding_bills procedure + analytical queries</div>
+    </div>
+  </div>
+  <div class="prob">
+    <div class="prob-n">04</div>
+    <div>
+      <div class="prob-title">Missed Billing on Completed Appointments</div>
+      <div class="prob-body">When an appointment is marked Completed, a bill must exist. The <code class="i">auto_bill_on_completion</code> trigger automatically generates a bill entry the moment the status changes — no manual intervention needed, no visit goes unbilled.</div>
+      <div class="prob-solve">Solved by the AFTER UPDATE trigger — auto-generates bill on status change to Completed</div>
+    </div>
+  </div>
+  <div class="prob">
+    <div class="prob-n">05</div>
+    <div>
+      <div class="prob-title">Data Quality — Invalid Phone Numbers</div>
+      <div class="prob-body">Patient phone numbers must be exactly 10 numeric digits. Two validation triggers on the patients table — one for INSERT, one for UPDATE — reject any entry that doesn't meet this format using REGEXP validation.</div>
+      <div class="prob-solve">Solved by validate_patient_phone_insert and _update triggers with REGEXP check</div>
+    </div>
+  </div>
+  <div class="prob">
+    <div class="prob-n">06</div>
+    <div>
+      <div class="prob-title">Accidental Doctor Deletion</div>
+      <div class="prob-body">Deleting a doctor who has upcoming scheduled appointments would orphan those records. The <code class="i">prevent_doctor_delete</code> trigger blocks this at the database level — the doctor record stays until all future appointments are resolved.</div>
+      <div class="prob-solve">Solved by the BEFORE DELETE trigger on doctors table</div>
     </div>
   </div>
   <div class="prob">
     <div class="prob-n">07</div>
     <div>
       <div class="prob-title">Reconstructing a Patient's Full Clinical Journey</div>
-      <div class="prob-body">If a patient returns for a follow-up, the doctor needs the full picture — prior visits, what was prescribed, what the labs showed, what was billed. The hub design makes this possible in a single multi-join query. You start at <code class="i">appointments</code> and every clinical and financial record is one FK away.</div>
-      <div class="prob-solve">Solved by the appointment-centric hub schema — 5 tables joinable through one central anchor row</div>
+      <div class="prob-body">When a patient returns for a follow-up, the doctor needs the full picture. The <code class="i">sp_patient_history</code> procedure returns all appointments, prescriptions, lab results, and bills for any patient in a single call.</div>
+      <div class="prob-solve">Solved by sp_patient_history procedure + appointment-centric hub schema</div>
+    </div>
+  </div>
+  <div class="prob">
+    <div class="prob-n">08</div>
+    <div>
+      <div class="prob-title">Critical Lab Value Detection</div>
+      <div class="prob-body">Lab reports store WBC, RBC, and Hemoglobin as JSON. The <code class="i">sp_abnormal_lab_reports</code> procedure parses these values and flags any patient with readings outside normal ranges — enabling early clinical intervention.</div>
+      <div class="prob-solve">Solved by sp_abnormal_lab_reports with JSON_EXTRACT and range-based flagging</div>
     </div>
   </div>
 </div>
@@ -507,7 +665,7 @@
 
 <footer>
   <span>EHIAS · Electronic Hospital Information &amp; Appointment System · MySQL 8.0</span>
-  <span style="font-family:'DM Mono',monospace">7 Tables · 3 SQL Objects · FY 2024–25 Data</span>
+  <span style="font-family:'DM Mono',monospace">7 Tables · 6 Triggers · 9 Procedures · 5 Views · 11 Queries · FY 2024–25</span>
 </footer>
 
 <script>
